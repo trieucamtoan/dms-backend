@@ -8,7 +8,6 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 
 @Data
-@NoArgsConstructor
 @Entity
 @Table(name = "USER_TABLE")
 public class User {
@@ -17,6 +16,13 @@ public class User {
     private String userName;
     private String password;
     private String email;
+
+    public User() {
+        this.id = -1;
+        this.userName = "";
+        this.password = "";
+        this.email = "";
+    }
 
     public void setId(int id) {
         this.id = id;
@@ -41,7 +47,11 @@ public class User {
         this.email = email;
     }
 
-    public String getUsername() {
+    public int getId() {
+        return id;
+    }
+
+    public String getUserName() {
         return userName;
     }
 
@@ -53,4 +63,3 @@ public class User {
         return email;
     }
 }
-

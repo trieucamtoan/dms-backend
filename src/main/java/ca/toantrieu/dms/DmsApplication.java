@@ -1,11 +1,18 @@
 package ca.toantrieu.dms;
 
 
+import ca.toantrieu.dms.Config.SecurityConfig;
 import ca.toantrieu.dms.Model.User;
 import ca.toantrieu.dms.Repository.UserRepository;
+import ca.toantrieu.dms.Util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.context.annotation.Bean;
+import org.springframework.security.crypto.bcrypt.BCrypt;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 
 import javax.annotation.PostConstruct;
 import java.util.List;
@@ -17,14 +24,6 @@ public class DmsApplication {
 	@Autowired
 	private UserRepository repository;
 
-	@PostConstruct
-	public void initUsers() {
-		List<User> users = Stream.of(
-				new User(101, "java", "password", "java@gmail.com")
-		).collect(Collectors.toList());
-
-		repository.saveAll(users);
-	}
 	public static void main(String[] args) {
 		SpringApplication.run(DmsApplication.class, args);
 	}

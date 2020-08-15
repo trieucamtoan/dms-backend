@@ -4,4 +4,4 @@ spring:
       enabled: true
 
 server:
-  port: 9192
+  port: 8080
