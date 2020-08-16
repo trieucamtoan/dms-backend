@@ -7,4 +7,5 @@ public class URL {
     public static final String REGISTER_URL = "/register";
     public static final String REFRESH_URL = "/refresh";
     public static final String GETALLUSER_URL = "/all";
+    public static final String H2_URL = "/h2-console";
 }

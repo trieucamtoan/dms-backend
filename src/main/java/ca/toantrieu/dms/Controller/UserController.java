@@ -17,10 +17,12 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-//@CrossOrigin(origins = "http://localhost:3000", maxAge = 3600)
+@CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
 
 public class UserController {
 
@@ -42,22 +44,60 @@ public class UserController {
     public String welcome() {
         return "Welcome to Dine-in Management System";
     }
+
     @GetMapping(URL.GETALLUSER_URL)
-    public List<User> getAllUsers(){
+    public ResponseEntity<?> getAllUsers(){
         try {
-            List<User> users = this.userRepository.findAll();
-            return users;
+            return ResponseEntity.status(HttpStatus.OK).body(this.userRepository.findAll());
         } catch(Exception e){
             e.printStackTrace();
         }
-        return null;
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot retrieve info of all users");
     }
 
+    @GetMapping("/user/{id}")
+    public ResponseEntity<?> getUserById(@PathVariable(value = "id") long userId){
+        try {
+            User user = this.userRepository.findById(userId);
+            return ResponseEntity.status(HttpStatus.OK).body(user);
+        } catch(Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Cannot retrieve user info");
+    }
+    @PostMapping("/user/add")
+    public ResponseEntity<?> createNewUser(@RequestBody User user){
+        try {
+            if (!user.getUserName().equals("")
+                    && !user.getPassword().equals("")
+                    && !user.getEmail().equals("")){
+                String hashedPassword = bCrypt.encode(user.getPassword());
+                User createdUser = new User(user.getUserName(), hashedPassword, user.getEmail());
+                this.userRepository.save(createdUser);
+                return ResponseEntity.status(HttpStatus.CREATED).body(createdUser);
+            }
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+    @DeleteMapping("/user/{id}")
+    public ResponseEntity<?> deleteUser(@PathVariable(value="id") long userId){
+        try {
+            User user = this.userRepository.findById(userId);
+            if (user != null){
+                this.userRepository.delete(user);
+                return ResponseEntity.status(HttpStatus.OK).body(null);
+            }
+            else {
+                throw new Exception("Unable to find user");
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Unable to find and delete user");
+    }
 
-//    @GetMapping("/email")
-//    public String getMyEmail() {
-//
-//    }
     //Refresh old token to a newer one
     @GetMapping(URL.REFRESH_URL)
     public ResponseEntity<?> refreshToken(HttpServletRequest request){
@@ -75,21 +115,19 @@ public class UserController {
 
     @PostMapping(URL.REGISTER_URL)
     @ResponseStatus(code = HttpStatus.OK)
-    @CrossOrigin(origins = "*", allowedHeaders = "*")
-    public ResponseEntity<User> register(@RequestBody User user) {
+    public ResponseEntity<?> register(@RequestBody User user) {
         String hashedPassword = bCrypt.encode(user.getPassword());
-        User createdUser = new User(user.getId(), user.getUserName(), hashedPassword, user.getEmail());
+        User createdUser = new User(user.getUserName(), hashedPassword, user.getEmail());
         System.out.println(createdUser);
         try {
-            if (user.getId() == -1
-                    || user.getUserName() == ""
-                    || user.getPassword() == ""
-                    || user.getEmail() == ""){
-                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+            if (user.getUserName().equals("")
+                    || user.getPassword().equals("")
+                    || user.getEmail().equals("")){
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Field cannot be empty/missing");
             }
             else {
                 this.userRepository.save(createdUser);
-                return ResponseEntity.status(200).body(createdUser);
+                return ResponseEntity.status(HttpStatus.OK).body(createdUser);
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -102,7 +140,7 @@ public class UserController {
         try {
             User user = this.userRepository.findByUserName(authorizationRequest.getUserName());
             if (user == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body(null);
+                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot generate token");
             }
             else {
                 String hashedPassword = user.getPassword();
@@ -115,7 +153,6 @@ public class UserController {
                     return ResponseEntity.status(HttpStatus.OK).body(token);
                 }
                 else {
-                    System.out.println("No match");
                     return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(null);
                 }
             }

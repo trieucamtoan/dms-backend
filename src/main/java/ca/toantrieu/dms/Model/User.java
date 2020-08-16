@@ -2,34 +2,29 @@ package ca.toantrieu.dms.Model;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.Generated;
 import lombok.NoArgsConstructor;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+
+import javax.persistence.*;
 
 @Data
 @Entity
 @Table(name = "USER_TABLE")
 public class User {
     @Id
-    private int id;
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    private long id;
     private String userName;
     private String password;
     private String email;
 
     public User() {
-        this.id = -1;
         this.userName = "";
         this.password = "";
         this.email = "";
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public User(int id, String userName, String password, String email) {
-        this.id = id;
+    public User(String userName, String password, String email) {
         this.userName = userName;
         this.password = password;
         this.email = email;
@@ -47,7 +42,7 @@ public class User {
         this.email = email;
     }
 
-    public int getId() {
+    public long getId() {
         return id;
     }
 
