@@ -23,7 +23,6 @@ import java.util.Map;
 
 @RestController
 @CrossOrigin(origins = "http://localhost:3000", allowedHeaders = "*")
-
 public class UserController {
 
     @Autowired
@@ -48,7 +47,8 @@ public class UserController {
     @GetMapping(URL.GETALLUSER_URL)
     public ResponseEntity<?> getAllUsers(){
         try {
-            return ResponseEntity.status(HttpStatus.OK).body(this.userRepository.findAll());
+            List<User> users = this.userRepository.findAll();
+            return ResponseEntity.status(HttpStatus.OK).body(users);
         } catch(Exception e){
             e.printStackTrace();
         }
