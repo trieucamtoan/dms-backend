@@ -1,9 +1,8 @@
 package ca.toantrieu.dms.filter;
 
-import ca.toantrieu.dms.Service.CustomUserDetailsService;
+import ca.toantrieu.dms.Service.CustomUserDetailsServiceImpl;
 import ca.toantrieu.dms.Util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -22,7 +21,7 @@ public class JwtFilter extends OncePerRequestFilter {
     @Autowired
     private JwtUtil jwtUtil;
     @Autowired
-    private CustomUserDetailsService service;
+    private CustomUserDetailsServiceImpl service;
 
 //    @Value("${jwt.http.request.header}")
 //    private String tokenHeader;
