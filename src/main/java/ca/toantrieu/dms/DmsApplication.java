@@ -45,18 +45,17 @@ public class DmsApplication {
 
 	@PostConstruct
 	private void postConstruct() {
-
-		User existingAdmin = customUserService.findByUserName("admin");
 		Role userRole = roleService.findByRole("USER");
 		Role adminRole = roleService.findByRole("ADMIN");
-		if (existingAdmin != null || userRole != null || adminRole != null){
-			//Exist admin in the system, avoid creating a new one
-		}
-		else if (existingAdmin == null && userRole == null || adminRole == null){
-			//Initialize roles
-			roleRepository.save(new Role("ADMIN"));
+		if (userRole == null){
 			roleRepository.save(new Role("USER"));
+		}
+		if (adminRole == null){
+			roleRepository.save(new Role("ADMIN"));
+		}
 
+		User existingAdmin = customUserService.findByUserName("admin");
+		if (existingAdmin == null){
 			// save Admin account
 			User admin = new User("admin", "password", "admin@gmail.com");
 			customUserService.saveUser(admin);

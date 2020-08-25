@@ -56,15 +56,14 @@ public class CustomUserServiceImpl implements CustomUserService {
     public void updateUser(User user) {
         User updateUser = userRepository.findById(user.getId()).orElse(null);
         if (updateUser != null){
-            user.setUsername(user.getUserName());
-            user.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
-            user.setRoles(user.getRoles());
-            user.addRoles(new Role("USER"));
-            user.setEmail(user.getEmail());
-            user.setEnabled(true);
-            userRepository.save(user);
+            updateUser.setUsername(user.getUserName());
+            updateUser.setPassword(bCryptPasswordEncoder.encode(user.getPassword()));
+            updateUser.setRoles(user.getRoles());
+            updateUser.addRoles(new Role("USER"));
+            updateUser.setEmail(user.getEmail());
+            updateUser.setEnabled(true);
+            userRepository.save(updateUser);
         }
-        userRepository.save(updateUser);
     }
 
     @Override
@@ -77,5 +76,35 @@ public class CustomUserServiceImpl implements CustomUserService {
         Role adminRole = roleService.findByRole("ADMIN");
         user.addRoles(adminRole);
         userRepository.save(user);
+    }
+
+    @Override
+    public void updateUserUserName(Long id, String username) {
+        User updateUser = userRepository.findById(id).orElse(null);
+        if (updateUser != null){
+            updateUser.setUsername(username);
+            userRepository.save(updateUser);
+        }
+    }
+
+    @Override
+    public void updateUserPassword(Long id, String password) {
+        User updateUser = userRepository.findById(id).orElse(null);
+        if (updateUser != null){
+            updateUser.setPassword(bCryptPasswordEncoder.encode(password));
+            userRepository.save(updateUser);
+        }
+    }
+
+    @Override
+    public void updateUserEmail(Long id, String email){
+        User updateUser = userRepository.findById(id).orElse(null);
+        if (updateUser != null){
+            updateUser.setEmail(email);
+            userRepository.save(updateUser);
+        }
+        else {
+            System.out.println("Cannot find user");
+        }
     }
 }

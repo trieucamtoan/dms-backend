@@ -13,6 +13,12 @@ public interface CustomUserService {
 
     void updateUser(User user);
 
+    void updateUserUserName(Long id, String username);
+
+    void updateUserPassword(Long id, String password);
+
+    void updateUserEmail(Long id, String email);
+
     void updateAdminAccess(User user);
 
     void deleteUserById(long userId);

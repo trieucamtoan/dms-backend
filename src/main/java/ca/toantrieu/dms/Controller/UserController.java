@@ -47,10 +47,10 @@ public class UserController {
 
 
     @GetMapping("/")
-    public String welcome() {
+    public ResponseEntity<?> welcome() {
 //        System.out.println("ADMIN IS : " + request.isUserInRole("ROLE_USER"));
 //        System.out.println("ADMIN IS : " + request.isUserInRole("ROLE_ADMIN"));
-        return "Welcome to Dine-in Management System";
+        return ResponseEntity.status(HttpStatus.OK).body("Welcome to Dine-in Management System");
     }
 
     @GetMapping("/admin")
@@ -98,6 +98,48 @@ public class UserController {
         }
         return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
     }
+
+    @PutMapping("/user/{id}/username")
+    public ResponseEntity<?> updateUserUserName(@PathVariable(value="id") long id, @RequestBody String username){
+        try{
+            if (!username.equals("") || !username.equals(null)){
+                customUserService.updateUserUserName(id, username);
+                return ResponseEntity.status(HttpStatus.OK).body(null);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+    @PutMapping("/user/{id}/email")
+    public ResponseEntity<?> updateUserEmail(@PathVariable(value="id") long id, @RequestBody String email){
+        try{
+            if (!email.equals("") || !email.equals(null)){
+                customUserService.updateUserEmail(id, email);
+                return ResponseEntity.status(HttpStatus.OK).body(null);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+    @PutMapping("/user/{id}/password")
+    public ResponseEntity<?> updateUserPassword(@PathVariable(value="id") long id,@RequestBody User user){
+        try {
+            if (!user.getPassword().equals("") || !user.getPassword().equals(null)){
+                customUserService.updateUserPassword(id, user.getPassword());
+                return ResponseEntity.status(HttpStatus.OK).body(null);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(null);
+    }
+
+
+
     @DeleteMapping("/user/{id}")
     public ResponseEntity<?> deleteUser(@PathVariable(value="id") long userId){
         try {
@@ -144,11 +186,11 @@ public class UserController {
     }
 
     @PostMapping(URL.LOGIN_URL)
-    public ResponseEntity<?> generateToken(@RequestBody AuthorizationRequest authorizationRequest) throws Exception{
+    public ResponseEntity<?> login(@RequestBody AuthorizationRequest authorizationRequest) throws Exception{
         try {
             User user = this.userRepository.findByUserName(authorizationRequest.getUserName());
             if (user == null){
-                return ResponseEntity.status(HttpStatus.NOT_FOUND).body("Cannot generate token");
+                return ResponseEntity.status(HttpStatus.FORBIDDEN).body("Invalid Login");
             }
             else {
                 String hashedPassword = user.getPassword();
